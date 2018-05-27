@@ -1,0 +1,14 @@
+{
+  "plugins": [
+    "syntax-dynamic-import",
+    "transform-runtime"
+  ],
+  "presets": [
+    "react",
+    ["env", {
+      "targets": {
+        "node": "current"
+      }
+    }]
+  ]
+}

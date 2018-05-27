@@ -1,0 +1,45 @@
+{
+  "name": "jerrycan",
+  "version": "0.0.1",
+  "description": "Jerrycan is a web application wrapper build on microservices & schema pettern to deploy dynamic web applications.",
+  "main": "./lib/index.js",
+  "bin": {
+    "jerrycan": "./lib/coreBuilder.js"
+  },
+  "scripts": {
+    "prepublishOnly": "npm run compile",
+    "compile": "babel -d lib/ src/ --copy-files",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": {
+    "name": "Shimi Bar",
+    "mail": "barshimi@gmail.com"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-eslint": "^8.2.3",
+    "babel-plugin-syntax-dynamic-import": "^6.18.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "eslint": "^4.19.1",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-plugin-babel": "^5.1.0",
+    "eslint-plugin-import": "^2.11.0",
+    "eslint-plugin-node": "^6.0.1",
+    "eslint-plugin-promise": "^3.7.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "querystring": "^0.2.0",
+    "reqwest": "^2.0.5"
+  },
+  "dependencies": {
+    "browserify-fs": "^1.0.0",
+    "child_process": "^1.0.2",
+    "debug": "^3.1.0",
+    "lodash.get": "^4.4.2",
+    "lodash.set": "^4.3.2",
+    "node-ensure": "0.0.0",
+    "shelljs": "^0.8.1"
+  }
+}
