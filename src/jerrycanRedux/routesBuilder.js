@@ -1,9 +1,9 @@
 import {buildReducerFunc} from './reducersCreator'
-
+const routesJson = require('../../../../coreJson/JcRouterConfiguration.json')
 const debug = require('debug')('webApp:routeBuilder')
 
-export async function routesBuilder (registerReducers, env, obj = null) {
-  const routeJsonConf = obj || await fetchJcRouterConfigurationFile()
+export function routesBuilder (registerReducers, env, obj = null) {
+  const routeJsonConf = obj || routesJson
 
   return Object.keys(routeJsonConf)
     .filter(r => r !== '$$_conf')
@@ -29,8 +29,8 @@ export async function routesBuilder (registerReducers, env, obj = null) {
 
 function createChildRoutes (routeObj, registerReducers, env, routeConf) {
   routeObj['getChildRoutes'] = (partialNextState, cb) => {
-    require.ensure([], async function (require) {
-      cb(null, await routesBuilder(registerReducers, env, routeConf))
+    require.ensure([], function (require) {
+      cb(null, routesBuilder(registerReducers, env, routeConf))
     })
   }
 }
@@ -66,34 +66,6 @@ function fetchConfigFiles (moduleName, configFile) {
   })
 }
 
-// function fetchConfigFiles (moduleName) {
-//   return new Promise((resolve, reject) => {
-//     try {
-//       const req = require.context(path.join(__dirname, MODULES_NAME, moduleName), false, /\.json/)
-//       const reducerObj = req.keys().reduce((obj, key) => {
-//         const fileName = key.split('.')[0]
-//         obj[fileName] = require(path.join(__dirname, MODULES_NAME, moduleName, key)).default
-//         return obj
-//       }, {})
-//       resolve(reducerObj)
-//     } catch (e) {
-//       reject(e)
-//     }
-//   })
-// }
-
 function reduxReducer (initialState, reducersMap) {
   return (state = initialState, action) => reducersMap.hasOwnProperty(action.type) ? reducersMap[action.type](state, action.payload) : state
-}
-
-function fetchJcRouterConfigurationFile () {
-  return new Promise((resolve, reject) => {
-    try {
-      import('../../../../coreJson/JcRouterConfiguration.json').then(module => {
-        resolve(module.default ? module.default : module)
-      })
-    } catch (e) {
-      reject(e)
-    }
-  })
 }

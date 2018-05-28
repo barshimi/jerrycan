@@ -1,19 +1,18 @@
 import shell from 'shelljs'
 import {MODULES_NAME} from '../env'
-import {closeService} from '../utils'
 import fs from 'fs'
 
 export default function (stack) {
   try {
     if (!fs.existsSync(`${process.cwd()}/${MODULES_NAME}`)) throw Error('Modules directory is not exist !')
-    if (fs.existsSync(`${process.cwd()}/${MODULES_NAME}/defaultCore`)) return
+    if (fs.existsSync(`${process.cwd()}/${MODULES_NAME}/defaultCore`)) return true
     shell.mkdir(`${process.cwd()}/${MODULES_NAME}/defaultCore`)
     fs.writeFile(`${process.cwd()}/${MODULES_NAME}/defaultCore/App.js`, App[`${stack}Txt`], (err) => {
       if (err) throw Error('Failed to create default core module')
       console.log('Succeded building default core module')
     })
   } catch (e) {
-    closeService('Failed to create default core module')
+    throw new Error('Failed to create default core module')
   }
 }
 

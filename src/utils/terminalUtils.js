@@ -1,15 +1,15 @@
-import process from 'child_process'
 
 /**
  * close service with terminal console
  * @param  {string} msg
  */
-export const closeService = (msg) => {
-  process.on('exit', code => {
-    if (code === 0) console.log(`Failed to execute : ${msg} | process exited with code ${code}`)
-  })
-  process.exit(0)
-}
+// export const closeService = (msg) => {
+//   throw new Error(`Failed to execute : ${msg}`)
+//   // process.on('exit', code => {
+//   //   if (code === 0) console.log(`Failed to execute : ${msg} | process exited with code ${code}`)
+//   // })
+//   // process.exit(0)
+// }
 
 // export const spawnCmd = (cmd) => {
 //   const spawnCmd = process.spawn(cmd, {shell: true})

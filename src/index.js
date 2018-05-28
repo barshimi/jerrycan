@@ -11,25 +11,18 @@ import {
 export default (function (env) {
   let reduxElements = null
   function init () {
-    return Promise.all([
-      constantsCreator(),
-      actionsCreator(),
-      middlewaresCreator(),
-      new ReducerRegistry(reducersCreator())
-    ]).then(async (res) => {
-      const routes = await routesBuilder(res[3], env)
-      return {
-        constants: res[0],
-        actions: res[1],
-        appMiddleware: res[2],
-        reducerRegistry: res[3],
-        routes: {childRoutes: routes}
-      }
-    })
+    const reducers = new ReducerRegistry(reducersCreator())
+    return {
+      constants: constantsCreator(),
+      actions: actionsCreator(),
+      appMiddleware: middlewaresCreator(),
+      reducerRegistry: reducers,
+      routes: {childRoutes: routesBuilder(reducers, env)}
+    }
   }
   return {
-    init: async function () {
-      if (!reduxElements) reduxElements = await init()
+    init: function () {
+      if (!reduxElements) reduxElements = init()
       return reduxElements
     }
   }

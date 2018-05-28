@@ -1,0 +1,7 @@
+{
+  "gitbook": "3.2.3",
+  "structure": {
+    "summary": "docs/SUMMARY.md" ,
+    "get start": "docs/GETSTART.md"
+  }
+}

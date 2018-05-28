@@ -1,12 +1,12 @@
 import path from 'path'
-
+const initialJson = require('../../../../coreJson/jcGlobalInitialState.json')
+const reducersJson = require('../../../../coreJson/jcInitialReducers.json')
 const debug = require('debug')('webApp:reducersCreator')
 
 export function reducersCreator () {
   try {
     // res [initialState, reducers]
-    Promise.all([fetchInitialJsonFile(), fetchReducersJsonFile()])
-      .then(res => reduxReducer(res[0] = {}, buildReducerFunc(res[1])))
+    return reduxReducer(initialJson || {}, buildReducerFunc(reducersJson))
   } catch (e) {
     debug(e)
   }
@@ -38,39 +38,6 @@ function defaultReducerFunc (state, payload, reducers) {
   return Object.assign({}, state, reducerObj)
 }
 
-function fetchInitialJsonFile () {
-  return new Promise((resolve, reject) => {
-    try {
-      import('../../../../coreJson/jcGlobalInitialState.json').then(res => {
-        resolve(res.default ? res.default : res)
-      })
-    } catch (e) {
-      reject(e)
-    }
-  })
-}
-
-function fetchReducersJsonFile () {
-  return new Promise((resolve, reject) => {
-    try {
-      import('../../../../coreJson/jcInitialReducers.json').then(res => {
-        resolve(res.default ? res.default : res)
-      })
-    } catch (e) {
-      reject(e)
-    }
-  })
-}
-
 function reduxReducer (initialState, reducersMap) {
   return (state = initialState, action) => reducersMap.hasOwnProperty(action.type) ? reducersMap[action.type](state, action.payload) : state
 }
-
-// function fetchCoreJsonFile (file) {
-//   return new Promise((resolve, reject) => {
-//     fs.readFile(path.join(__dirname, 'coreJson', `${file}.json`), 'utf8', (err, data) => {
-//       if (err) reject(err)
-//       return resolve(JSON.parse(data))
-//     })
-//   })
-// }
