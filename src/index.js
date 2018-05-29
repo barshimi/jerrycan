@@ -15,7 +15,7 @@ export default (function (env) {
     return {
       constants: constantsCreator(),
       actions: actionsCreator(),
-      appMiddleware: middlewaresCreator(),
+      // appMiddleware: middlewaresCreator(),
       reducerRegistry: reducers,
       routes: {childRoutes: routesBuilder(reducers, env)}
     }
@@ -24,6 +24,10 @@ export default (function (env) {
     init: function () {
       if (!reduxElements) reduxElements = init()
       return reduxElements
+    },
+    appMiddleware: async function (actions) {
+      const mw = await middlewaresCreator(actions)
+      return mw
     }
   }
 })()
