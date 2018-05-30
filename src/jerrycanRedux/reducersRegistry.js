@@ -4,7 +4,7 @@
  */
 export class reducersRegistry {
   constructor (initialReducers = {}) {
-    this._reducers = {initialReducers}
+    this._reducers = initialReducers
     this._emitChange = null
   }
   /**
