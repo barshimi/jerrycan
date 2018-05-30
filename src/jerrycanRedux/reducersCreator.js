@@ -27,7 +27,6 @@ function checkReducerConfig (reducerConfig) {
   return true
 }
 function defaultReducerFunc (state, payload, reducerConfig) {
-  console.log(state, payload, reducerConfig)
   return !checkReducerConfig(reducerConfig) ? reducerConfig : reducerConfig.payloadKey ? payload[reducerConfig.payloadKey] : payload
 }
 
