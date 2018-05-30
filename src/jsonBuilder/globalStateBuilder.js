@@ -49,9 +49,9 @@ const setGlobalsReducers = (gcObj, moduleName, globalReducers) => {
     const reducersToAction = Object.assign({
       actionConst: gcObj.actionConst,
       reducers: gcObj.reducers
-    }, gcObj.hasOwnProperty('costumeReducer') ? {
-      costumeReducer: {
-        reducerFunc: gcObj.costumeReducer,
+    }, gcObj.hasOwnProperty('customReducer') ? {
+      customReducer: {
+        reducerFunc: gcObj.customReducer,
         module: moduleName
       }} : {})
     if (!gcObj.initialReducers) {

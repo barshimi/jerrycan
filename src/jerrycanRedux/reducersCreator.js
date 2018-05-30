@@ -13,11 +13,26 @@ export function reducersCreator () {
 }
 function buildReducerFunc (reducers) {
   return reducers.reduce((obj, configReducer) => {
-    if (!configReducer.hasOwnProperty('costumeReducer')) {
+    if (!configReducer.hasOwnProperty('customReducer')) {
       Object.keys(configReducer.reducers).forEach(innerReducer => {
         if (!obj.hasOwnProperty(innerReducer)) obj[innerReducer] = {}
         obj[innerReducer][configReducer.actionConst] = (state, payload) => defaultReducerFunc(state, payload, configReducer.reducers[innerReducer])
       })
+    } else {
+      import(`../../../../modules/${configReducer.customReducer.module}/reducers/${configReducer.customReducer.reducerFunc}`)
+        .then(customReducer => {
+          Object.keys(configReducer.reducers).forEach(innerReducer => {
+            if (!obj.hasOwnProperty(innerReducer)) obj[innerReducer] = {}
+            obj[innerReducer][configReducer.actionConst] = (state, payload) => customReducer.default(state, payload, {reducer: innerReducer, config: configReducer.reducers[innerReducer]})
+          })
+        })
+        .catch(err => {
+          debug(err)
+          return Object.keys(configReducer.reducers).forEach(innerReducer => {
+            if (!obj.hasOwnProperty(innerReducer)) obj[innerReducer] = {}
+            obj[innerReducer][configReducer.actionConst] = (state, payload) => defaultReducerFunc(state, payload, configReducer.reducers[innerReducer])
+          })
+        })
     }
     return obj
   }, {})
