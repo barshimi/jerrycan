@@ -13,19 +13,20 @@ export default function apiMiddleware (actions, store) {
 // set default headers with process.env.HEADERS
 function buildRequestOptions (action, index = 0) {
   const {endPoint} = action.JCAC
+  const payload = action.hasOwnProperty('payload') && action.payload
   const method = endPoint[index].method
   const headers = Object.assign(
     {},
     process.env.hasOwnProperty('HEADERS') && process.env.HEADERS.length ? process.env.HEADERS : {},
     endPoint[index].hasOwnProperty('headers') ? endPoint[index].headers : {},
-    action.payload.hasOwnProperty('JCAC_headers') ? action.payload.JCAC_headers : {}
+    payload && action.payload.hasOwnProperty('JCAC_headers') ? action.payload.JCAC_headers : {}
   )
-  const query = action.payload.hasOwnProperty('JCAC_query') ? querystring.stringify(action.payload.JCAC_query) : {}
+  const query = payload && action.payload.hasOwnProperty('JCAC_query') ? querystring.stringify(action.payload.JCAC_query) : {}
   const URL = [
     process.env.hasOwnProperty('API_HOST') && process.env.API_HOST.length ? process.env.API_HOST : '',
     endPoint[index].url,
-    action.payload.hasOwnProperty('JCAC_url') ? action.payload.JCAC_url : '',
-    action.payload.hasOwnProperty('JCAC_query') ? querystring.stringify(action.payload.JCAC_query) : '',
+    payload && action.payload.hasOwnProperty('JCAC_url') ? action.payload.JCAC_url : '',
+    payload && action.payload.hasOwnProperty('JCAC_query') ? querystring.stringify(action.payload.JCAC_query) : '',
     !checkDataTransformReq(method) ? buildQueryParams(action.payload, query) : ''
   ].join('')
   return Object.assign({
@@ -48,7 +49,7 @@ const singleRequestBuilder = (action, store, next) => {
   request.filter(req => req.type).forEach(req => store.dispatch(req))
   const reqOptions = Object.assign(
     buildRequestOptions(action),
-    checkDataTransformReq(endPoint.method) ? {data: JSON.stringify(reduceDataKeys(action.payload))} : {}
+    checkDataTransformReq(endPoint[0].method) ? {data: JSON.stringify(reduceDataKeys(action.payload))} : {}
   )
   Reqwest(reqOptions)
     .then(res => {
@@ -70,7 +71,7 @@ const multipleRequestBuilder = (action, store, next) => {
     if (call.key) keysArr.push(call.key)
     const reqOptions = Object.assign(
       buildRequestOptions(action, i),
-      checkDataTransformReq(endPoint.method) ? {data: JSON.stringify(reduceDataKeys(action.payload))} : {}
+      checkDataTransformReq(i.method) ? {data: JSON.stringify(reduceDataKeys(action.payload))} : {}
     )
     return promiseRequest(reqOptions)
   }))
@@ -105,7 +106,7 @@ const buildQueryParams = (data, query) => {
 }
 
 const reduceDataKeys = (data) => {
-  if (Array.isArray(data)) return {}
+  if (!data || Array.isArray(data)) return {}
   return Object.keys(data).filter(key => !key.includes('JCAC')).reduce((obj, key) => {
     obj[key] = data[key]
     return obj
