@@ -3,7 +3,7 @@ import {
   MODULES,
   DEFAULTE_ROUTE
 } from '../env'
-import fetchModulesRcFiles from './fetchModulesRcFiles'
+import fetchModulesConfFiles from './fetchModulesConfFiles'
 import validateRcFile from './validateRcFile'
 import routesBuilder from './routesBuilder'
 import middlewareBuilder from './middlewareBuilder'
@@ -16,14 +16,14 @@ const debug = require('debug')('webApp:jsonBuilder')
 
 export default async function () {
   try {
-    const jerrycanrcObj = await fetchModulesRcFiles()
-    const jerrycanBuiltObj = await jerrycanrcObj.rcArr.filter(rcFile => MODULES.includes(rcFile.module.name)).reduce((coreObj, rcFile) => {
-      if (!validateRcFile(rcFile)) throw Error(`Jerrycan ${rcFile.module.name} module file is not valid`)
+    const jerrycanrcObj = await fetchModulesConfFiles()
+    const jerrycanBuiltObj = await jerrycanrcObj.confArr.filter(confFile => MODULES.includes(confFile.module.name)).reduce((coreObj, confFile) => {
+      if (!validateRcFile(confFile)) throw Error(`Jerrycan ${confFile.module.name} module file is not valid`)
       Promise.all([
-        routesBuilder(rcFile.route, coreObj.router, DEFAULTE_ROUTE),
-        middlewareBuilder(rcFile.middlewares, coreObj.middlewares, jerrycanrcObj.mw),
-        globalStateBuilder(rcFile.globalCycle, rcFile.module.name, coreObj.globalState),
-        initialStateBuilder(rcFile.global_types, coreObj.initialState)
+        routesBuilder(confFile.route, coreObj.router, DEFAULTE_ROUTE),
+        middlewareBuilder(confFile.middlewares, coreObj.middlewares, jerrycanrcObj.mw),
+        globalStateBuilder(confFile.globalCycle, confFile.module.name, coreObj.globalState),
+        initialStateBuilder(confFile.global_types, coreObj.initialState)
       ])
       return coreObj
     }, {
