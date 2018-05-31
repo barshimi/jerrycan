@@ -1,6 +1,5 @@
 import path from 'path'
 import fs from 'fs'
-// import {CONFIG_TYPE, MODULES_NAME, MODULES} from '../env'
 import {MODULES_NAME, MODULES} from '../env'
 
 const modulesPath = path.join(process.cwd(), MODULES_NAME)
@@ -11,7 +10,6 @@ const filesType = [
 ]
 const fetchModulesRcFiles = () => {
   try {
-    // const fileType = CONFIG_TYPE === 'rc' ? '.jerrycanmodulerc' : CONFIG_TYPE === 'json' ? 'jerrycanmodulerc.json' : 'jerrycanmodulerc.js'
     return fs.readdirSync(modulesPath).filter(checkModuleSrc).reduce((confObj, item) => {
       if (fs.existsSync(path.join(modulesPath, item, 'middleware')) && fs.statSync(path.join(modulesPath, item, 'middleware')).isDirectory()) fetchMwfilesPath(confObj.mw, modulesPath, item)
       filesType.reduce((flag, file) => {
@@ -23,9 +21,6 @@ const fetchModulesRcFiles = () => {
         }
         return flag
       }, false)
-      // const jerrycanrcPath = path.join(modulesPath, item, fileType)
-      // const rcExist = fs.existsSync(jerrycanrcPath)
-      // if (rcExist) confObj['confArr'].push(CONFIG_TYPE !== 'js' ? JSON.parse(fs.readFileSync(jerrycanrcPath)) : fs.readFileSync(jerrycanrcPath))
       return confObj
     }, {confArr: [], mw: {}})
   } catch (e) {
