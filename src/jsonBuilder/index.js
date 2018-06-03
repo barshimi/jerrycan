@@ -22,7 +22,7 @@ export default async function () {
       Promise.all([
         routesBuilder(confFile.route, coreObj.router, DEFAULTE_ROUTE),
         middlewareBuilder(confFile.middlewares, coreObj.middlewares, jerrycanrcObj.mw),
-        globalStateBuilder(confFile.globalCycle, confFile.module.name, coreObj.globalState),
+        globalStateBuilder(confFile.globalCycle, confFile.module, coreObj.globalState),
         initialStateBuilder(confFile.global_types, coreObj.initialState)
       ])
       return coreObj

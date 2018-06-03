@@ -1,6 +1,6 @@
 const debug = require('debug')('webApp:globalStateBuilder')
 
-export default function (moduleGlobalState, moduleName, globalState) {
+export default function (moduleGlobalState, moduleConfig, globalState) {
   if (!moduleGlobalState.length) return globalState
   try {
     moduleGlobalState.forEach(global => {
@@ -9,7 +9,7 @@ export default function (moduleGlobalState, moduleName, globalState) {
       if (validateActionName(globalState.actions, global.actionFnName)) throw Error('An action creator with the same name exist in application')
       globalState.actions.push(actionCreatorStructure(global))
       globalState.actionsInfo[global.actionConst] = getActionInfo(global)
-      setGlobalsReducers(global, moduleName, globalState.reducers)
+      setGlobalsReducers(global, moduleConfig, globalState.reducers)
     })
   } catch (e) {
     debug(e)
@@ -44,14 +44,16 @@ const checkInitialReducersInModule = (gcArr, moduleReducersMap) => Object.keys(g
 
 const setModuleReducersMap = (gcArr, moduleReducersMap) => Object.keys(gcArr).filter(r => !moduleReducersMap.includes(r)).every(r => moduleReducersMap.push(r))
 
-const setGlobalsReducers = (gcObj, moduleName, globalReducers) => {
+const setGlobalsReducers = (gcObj, moduleConfig, globalReducers) => {
   try {
+    const moduleName = moduleConfig.name
     const reducersToAction = Object.assign({
       actionConst: gcObj.actionConst,
       reducers: gcObj.reducers
     }, gcObj.hasOwnProperty('customReducer') ? {
       customReducer: {
         reducerFunc: gcObj.customReducer,
+        folderPath: moduleConfig.reducers || 'reducers',
         module: moduleName
       }} : {})
     if (!gcObj.initialReducers) {

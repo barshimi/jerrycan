@@ -19,7 +19,7 @@ function buildReducerFunc (reducers) {
         obj[innerReducer][configReducer.actionConst] = (state, payload) => defaultReducerFunc(state, payload, configReducer.reducers[innerReducer])
       })
     } else {
-      import(`../../../../modules/${configReducer.customReducer.module}/reducers/${configReducer.customReducer.reducerFunc}`)
+      import(`../../../../modules/${configReducer.customReducer.module}/${configReducer.customReducer.folderPath}/${configReducer.customReducer.reducerFunc}`)
         .then(customReducer => {
           Object.keys(configReducer.reducers).forEach(innerReducer => {
             if (!obj.hasOwnProperty(innerReducer)) obj[innerReducer] = {}

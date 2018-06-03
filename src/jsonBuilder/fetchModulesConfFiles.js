@@ -11,12 +11,15 @@ const filesType = [
 const fetchModulesRcFiles = () => {
   try {
     return fs.readdirSync(modulesPath).filter(checkModuleSrc).reduce((confObj, item) => {
-      if (fs.existsSync(path.join(modulesPath, item, 'middleware')) && fs.statSync(path.join(modulesPath, item, 'middleware')).isDirectory()) fetchMwfilesPath(confObj.mw, modulesPath, item)
+      // if (fs.existsSync(path.join(modulesPath, item, 'middleware')) && fs.statSync(path.join(modulesPath, item, 'middleware')).isDirectory()) fetchMwfilesPath(confObj.mw, modulesPath, item)
       filesType.reduce((flag, file) => {
         if (flag) return true
         const jerrycanConfigPath = path.join(modulesPath, item, file.configName)
         if (fs.existsSync(jerrycanConfigPath)) {
-          confObj['confArr'].push(file.type !== 'js' ? JSON.parse(fs.readFileSync(jerrycanConfigPath)) : fs.readFileSync(jerrycanConfigPath))
+          const configFile = file.type !== 'js' ? JSON.parse(fs.readFileSync(jerrycanConfigPath)) : fs.readFileSync(jerrycanConfigPath)
+          const mwDirName = configFile.module.hasOwnProperty('middleware') ? configFile.module.middleware : 'middleware'
+          if (fs.existsSync(path.join(modulesPath, item, mwDirName)) && fs.statSync(path.join(modulesPath, item, mwDirName)).isDirectory()) fetchMwfilesPath(confObj.mw, modulesPath, item, mwDirName)
+          confObj['confArr'].push(configFile)
           flag = true
         }
         return flag
@@ -29,11 +32,11 @@ const fetchModulesRcFiles = () => {
   }
 }
 
-const fetchMwfilesPath = (obj, mwPath, moduleName) => {
-  return fs.readdirSync(path.join(mwPath, moduleName, 'middleware')).reduce((arr, item) => {
+const fetchMwfilesPath = (obj, mwPath, moduleName, mwDirName) => {
+  return fs.readdirSync(path.join(mwPath, moduleName, mwDirName)).reduce((arr, item) => {
     const splitFile = item.includes('.') ? item.split('.') : ''
     if (Array.isArray(splitFile) && splitFile[1] !== 'js') return
-    obj[splitFile[0]] = path.join(moduleName, 'middleware', item)
+    obj[splitFile[0]] = path.join(moduleName, mwDirName, item)
     return obj
   }, obj)
 }
